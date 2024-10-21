@@ -10,6 +10,7 @@ X <- as.data.frame(matrix(rnorm(n*d, mean = 0, sd = 1), nrow = n, ncol = d))
 epsilon <- rnorm(n,0,1)
 Y <- X$V1*exp(2*X$V2) + X$V3**2 + epsilon
 
+
 store_results <- matrix(0, ncol = 3, nrow=10, byrow = TRUE)
 
 time_execution <- function(n,d){
@@ -20,51 +21,39 @@ time_execution <- function(n,d){
   return(res_time[["elapsed"]])
 }
 
-i <- 0
+col_ind <- 0
 for(d in c(1000, 2000, 3000)){
-for (n_sample in seq(100, 1000, 100)){
-  i <- i+1
-  print(i)
-  list_time <- time_execution(n_sample,d)
-  store_results[i,] <- list_time
-  print(i)
-}}
-
+  print(d)
+  col_ind <- col_ind+1
+  i <- 0 
+  print(col_ind)
+  for (n_sample in seq(100, 1000, 100)){
+    i <- i+1
+    list_time <- time_execution(n_sample,d)
+    store_results[i,col_ind] <- list_time
+    print(i)
+  }}
 
 write.csv(store_results,file="hsic_time_samples.csv",row.names = FALSE)
 
 
+rm(list=ls())
 
+data <- read.csv("hsic_time_samples.csv")
 
 features <- seq(100,1000,100)
-moyenne_lignes <- rowMeans(store_results)
 
-plot(features, moyenne_lignes[1:10], type = "l", lty = 1, lwd = 1, 
+plot(features, data$V3, type = "l", lty = 3, lwd = 1, 
      xlab = "Numbers of samples", 
      ylab = "Seconds",
      main = "Computation time depending on sample size for differents features size for HSIC Lasso", 
-     ylim = c(1, 10^2 +10),
-     log="y",
-     yaxt = "n")  # Suppresses default y-axis labels
+     log="y")
 
-# Customize y-axis with no labels, only ticks
-axis(2, at = c(0,1,10, 100), labels = FALSE)  # Suppresses default labels but adds ticks
-
-# Add rotated y-axis labels using text() with 45 degrees rotation
-text(x = rep(par("usr")[1], 4), y = c(0,1,10, 100), 
-     labels = expression(0, 1, 10^1, 10^2), 
-     srt = 0,  # Rotate labels by 0 degrees
-     pos = 2,   # Position to the left of the axis
-     xpd = TRUE,  # Allow text outside plot region
-     adj = 1)  # Adjust alignment for rotated labels
-
-
-lines(features, moyenneligne[11:20], lty = 2, lwd = 1)
-lines(features, moyenneligne[21:30], lty = 3, lwd = 1)
+lines(features, data$V2, lty = 2, lwd = 1)
+lines(features, data$V1, lty = 1, lwd = 1)
 
 
 legend("topleft", legend = c("d=1000", "d=2000", "d=3000"), 
-       lty = c(1, 2,3), lwd = 1)
-
+       lty = c(1, 2,3), lwd = 1,cex=0.8)
 
 
