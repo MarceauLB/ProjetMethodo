@@ -10,18 +10,14 @@ X <- as.data.frame(matrix(rnorm(n*d, mean = 0, sd = 1), nrow = n, ncol = d))
 epsilon <- rnorm(n,0,1)
 Y <- X$V1*exp(2*X$V2) + X$V3**2 + epsilon
 
-store_results <- matrix(0, ncol = 30, nrow=30, byrow = TRUE)
+store_results <- matrix(0, ncol = 3, nrow=10, byrow = TRUE)
 
 time_execution <- function(n,d){
   X <- as.data.frame(matrix(rnorm(n*d, mean = 0, sd = 1), nrow = n, ncol = d))
   epsilon <- rnorm(n,0,1)
   Y <- X$V1*exp(2*X$V2) + X$V3**2 + epsilon
-  times_30 <- numeric(30)
-  for(i in 1:30){
-    res_time <- system.time(feature.selection(X,Y,3))
-    times_30[i] <- res_time[["elapsed"]]
-  }
-  return(times_30)
+  res_time <- system.time(feature.selection(X,Y,3))
+  return(res_time[["elapsed"]])
 }
 
 i <- 0
