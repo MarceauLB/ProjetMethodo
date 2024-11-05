@@ -1,5 +1,7 @@
 rm(list=ls())
 
+setwd("~/00_Ensai/projet-methodo/ProjetMethodo/r-code/exp_data2_r/")
+
 library(GSelection)
 
 n <- 100
@@ -47,13 +49,15 @@ plot(features, data$V3, type = "l", lty = 3, lwd = 1,
      xlab = "Numbers of samples", 
      ylab = "Seconds",
      main = "Computation time depending on sample size for differents features size for HSIC Lasso", 
-     log="y")
+     log="y", 
+     col="blue")
 
-lines(features, data$V2, lty = 2, lwd = 1)
-lines(features, data$V1, lty = 1, lwd = 1)
+lines(features, data$V2, lty = 2, lwd = 1, col="red")
+lines(features, data$V1, lty = 1, lwd = 1,col="black")
 
 
 legend("topleft", legend = c("d=1000", "d=2000", "d=3000"), 
-       lty = c(1, 2,3), lwd = 1,cex=0.8)
+       lty = c(1,2,3), lwd = 1,cex=1, 
+       col=c("black","red","blue"))
 
 

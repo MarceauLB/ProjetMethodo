@@ -32,8 +32,12 @@ for (nb_feature_generated in seq(100, 1000, 100)){
 
 write.csv(store_results,file="hsic_time_features.csv",row.names = FALSE)
 
+rm(list=ls())
+
+store_results_data <- read.csv("hsic_time_features.csv")
+
 features <- seq(100,1000,100)
-moyenne_lignes <- rowMeans(store_results)
+moyenne_lignes <- rowMeans(store_results_data)
 
 plot(features, moyenne_lignes, type = "l", 
      xlab = "Numbers of features", 
@@ -41,21 +45,14 @@ plot(features, moyenne_lignes, type = "l",
      main = "Computation time of different models depending on the number of selected variables", 
      ylim = c(1, 10^2 +10),
      log="y",
-     yaxt = "n")  # Suppresses default y-axis labels
-
-# Customize y-axis with no labels, only ticks
-axis(2, at = c(0,1,10, 100), labels = FALSE)  # Suppresses default labels but adds ticks
-
-# Add rotated y-axis labels using text() with 45 degrees rotation
-text(x = rep(par("usr")[1], 4), y = c(0,1,10, 100), 
-     labels = expression(0, 1, 10^1, 10^2), 
-     srt = 0,  # Rotate labels by 0 degrees
-     pos = 2,   # Position to the left of the axis
-     xpd = TRUE,  # Allow text outside plot region
-     adj = 1)  # Adjust alignment for rotated labels
+     col="black", lty=1)
 
 
-
+legend("topleft", 
+       legend = c("HSIC Lasso","SpAM", "QPFS"), 
+       col = c("black", "green", "red"),
+       lty = c(1,2,2), 
+       lwd = 1,cex=0.8)
 
 
 
