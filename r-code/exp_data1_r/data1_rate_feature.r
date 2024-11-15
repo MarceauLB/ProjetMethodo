@@ -1,4 +1,5 @@
 rm(list=ls())
+# changement marceau 
 n <- 250  # Nombre de lignes (observations)
 p <- 256  # Nombre de colonnes (variables)
 
