@@ -1,0 +1,1 @@
+Caractériser l'indépendance entre deux objets
