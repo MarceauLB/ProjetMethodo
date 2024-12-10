@@ -1,0 +1,261 @@
+---
+title: "ProjetMéthodo"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+n <- 2000
+p <- 100
+
+set.seed(123)
+```
+
+```{r}
+data <- as.data.frame(matrix(rnorm(n*p, mean = 0, sd = 1), nrow = n, ncol = p))
+epsilon <- rnorm(n,0,1)
+Y <- data$V1*exp(2*data$V2) + data$V3**2 + epsilon
+```
+
+
+
+
+
+#-----------------------------------------
+#-----------------DATA-2------------------
+#-----------------------------------------
+
+
+
+
+#-----------------------------------------
+#------------------mRMR-------------------
+#-----------------------------------------
+
+
+```{r}
+install.packages('mRMRe')
+library(mRMRe)
+```
+
+
+```{r}
+result_matrix3 <- matrix(nrow = 10, ncol = 30)
+
+# Fonction pour sélectionner des caractéristiques avec mRMR
+Selected_features <- function(n, p, d) {
+  pourcentage <- numeric(30)  # Pourcentage de caractéristiques communes
+  for (i in 1:30) {
+    # Générer les données
+    data <- as.data.frame(matrix(rnorm(n * p, mean = 0, sd = 1), nrow = n, ncol = p))
+    epsilon <- rnorm(n, 0, 1)
+    Y <- data$V1 * exp(2 * data$V2) + data$V3^2 + epsilon  # Génération de Y
+    data$Y <- Y  # Ajout de Y aux données
+    
+    # Préparer les données pour mRMR
+    mrmr_data <- mRMR.data(data = data)  # Convertir le data.frame pour mRMR
+    
+    # Appliquer mRMR.classic
+    fit <- mRMR.classic(data = mrmr_data, target_indices = ncol(data), feature_count = d)
+    
+    # Vérifier les indices des caractéristiques sélectionnées
+    selected_features <- as.numeric(fit@filters[[1]])  # Indices sélectionnés
+    valeurs_communes <- intersect(selected_features, c(1, 2, 3))  # Intersect avec V1, V2, V3
+    # Calculer le pourcentage
+    pourcentage[i] <- (length(valeurs_communes) / d) * 100
+  }
+  return(pourcentage)
+}
+
+
+
+# Boucle pour plusieurs tailles de jeu de données
+for (j in 1:10) {
+  result_matrix3[j, ] <- Selected_features(25 * j, 1000, 3)
+}
+```
+
+```{r}
+plot(seq(25,250, by = 25),
+     rowMeans(result_matrix3),
+     type = 'line')
+```
+
+
+```{r}
+write.csv(result_matrix3, file = "result_matrix3.csv", row.names = FALSE)
+```
+
+
+
+
+
+
+
+
+
+#-----------------------------------------
+#------------------HSIC-------------------
+#-----------------------------------------
+
+```{r}
+#install.packages('GSelection')
+library(GSelection)
+```
+
+
+
+```{r}
+result_matrix <- matrix(nrow = 10, ncol = 30)
+n <- 25
+
+Selected_features <- function(n,p,d){
+  pourcentage <- numeric(30)
+  for(i in 1:30){
+    data <- as.data.frame(matrix(rnorm(n*p, mean = 0, sd = 1), nrow = n, ncol = p))
+    epsilon <- rnorm(n,0,1)
+    Y <- data$V1*exp(2*data$V2) + data$V3**2 + epsilon
+  
+    fit <- feature.selection(data,Y,d=3)
+    fit$hsic_selected_feature_index
+  
+    valeurs_communes <- intersect(fit$hsic_selected_feature_index, c(1,2,3))
+    pourcentage[i] <- (length(valeurs_communes) / 3) * 100
+  }
+  return(pourcentage)
+}
+
+for(j in 1:10){
+  result_matrix[j, ] <- Selected_features(25*j,1000,3)
+}
+```
+
+```{r}
+plot(seq(25,250, by = 25),
+     rowMeans(result_matrix),
+     type = 'line')
+```
+
+
+```{r}
+write.csv(result_matrix, file = "result_matrix.csv", row.names = FALSE)
+```
+
+
+
+
+
+
+#-----------------------------------------
+#------------------SPAM-------------------
+#-----------------------------------------
+
+
+```{r}
+result_matrix2 <- matrix(nrow = 10, ncol = 30)
+n <- 25
+
+Selected_features <- function(n,p,d){
+  pourcentage <- numeric(30)
+  for(i in 1:30){
+    data <- as.data.frame(matrix(rnorm(n*p, mean = 0, sd = 1), nrow = n, ncol = p))
+    epsilon <- rnorm(n,0,1)
+    Y <- data$V1*exp(2*data$V2) + data$V3**2 + epsilon
+  
+    fit <- feature.selection(data,Y,d=3)
+    fit$hsic_selected_feature_index
+  
+    valeurs_communes <- intersect(fit$spam_selected_feature_index, c(1,2,3))
+    pourcentage[i] <- (length(valeurs_communes) / 3) * 100
+  }
+  return(pourcentage)
+}
+
+
+for(j in 1:10){
+  result_matrix2[j, ] <- Selected_features(25*j,1000,3)
+}
+```
+
+```{r}
+plot(seq(25,250, by = 25),
+     rowMeans(result_matrix2),
+     type = 'line')
+```
+
+
+
+```{r}
+write.csv(result_matrix2, file = "result_matrix2.csv", row.names = FALSE)
+```
+
+
+
+
+
+#-----------------------------------------
+#------------------LASSO-------------------
+#-----------------------------------------
+
+
+
+```{r}
+# Installer et charger glmnet si nécessaire
+#install.packages("glmnet")
+library(glmnet)
+```
+
+
+```{r}
+# Initialisation de la matrice de résultats
+result_matrix <- matrix(nrow = 10, ncol = 30)
+
+# Fonction pour sélectionner 3 variables avec Lasso
+Selected_features <- function(n, p, d) {
+  pourcentage <- numeric(30)
+  for (i in 1:30) {
+    # Générer les données
+    data <- as.data.frame(matrix(rnorm(n * p, mean = 0, sd = 1), nrow = n, ncol = p))
+    epsilon <- rnorm(n, 0, 1)
+    Y <- data$V1 * exp(2 * data$V2) + data$V3^2 + epsilon  # Génération de la cible Y
+    
+    # Ajuster un modèle Lasso
+    X <- as.matrix(data)  # glmnet nécessite une matrice
+    lasso_fit <- glmnet(X, Y, alpha = 1)  # alpha = 1 pour Lasso
+
+    # Sélection des coefficients avec le lambda minimal (validation croisée)
+    cv_fit <- cv.glmnet(X, Y, alpha = 1)
+    best_lambda <- cv_fit$lambda.min
+    coefficients <- as.numeric(coef(cv_fit, s = "lambda.min"))[-1]  # Exclure l'intercept
+    
+    # Obtenir les indices des 3 plus grandes valeurs absolues des coefficients
+    selected_features <- order(abs(coefficients), decreasing = TRUE)[1:d]
+    
+    # Calculer le pourcentage d'intersection avec V1, V2, V3
+    valeurs_communes <- intersect(selected_features, c(1, 2, 3))
+    pourcentage[i] <- (length(valeurs_communes) / d) * 100
+  }
+  return(pourcentage)
+}
+
+for (j in 1:10) {
+  result_matrix[j, ] <- Selected_features(25 * j, 1000, 3)
+}
+```
+
+
+
+
+```{r}
+plot(seq(25,250, by = 25),
+     rowMeans(result_matrix),
+     type = 'line')
+```
+
+```{r}
+write.csv(result_matrix, file = "result_matrix.csv", row.names = FALSE)
+```
+
