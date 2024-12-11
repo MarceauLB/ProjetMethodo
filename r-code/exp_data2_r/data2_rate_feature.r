@@ -1,4 +1,4 @@
-setwd("~/00_Ensai/projet-methodo/ProjetMethodo/r-code/exp_data1_r/")
+setwd("~/00_Ensai/projet-methodo/ProjetMethodo/r-code/exp_data2_r/")
 
 
 install.packages('GSelection')
@@ -78,3 +78,41 @@ for(j in 1:10){
 plot(seq(25,250, by = 25),
      rowMeans(result_matrix2),
      type = 'line')
+
+
+
+
+####################################################################
+# On trace tous les résultats sur un même graphique 
+####################################################################
+rm(list=ls())
+res_lasso <- read.csv("selected_LASSO.csv")
+res_spam <- read.csv("selected_spam.csv")
+res_mrmr <- read.csv("selected_mRMR.csv")
+res_hsic <- read.csv("selected_hsic.csv")
+
+
+mean_row_lasso <- rowMeans(res_lasso)
+mean_row_spam <- rowMeans(res_spam)
+mean_row_mrmr <- rowMeans(res_mrmr)
+mean_row_hsic <- rowMeans(res_hsic)
+
+echantillon_points <- seq(25, 250, by = 25)
+
+plot(echantillon_points, mean_row_hsic / 100, type = "l", 
+     xlab = "Taille de l'échantillon", 
+     ylab = "Moyenne des lignes",
+     main = "Moyenne des lignes par taille d'échantillon",
+     col = "red", lwd = 1)  # Rouge pour Lasso
+
+# Ajouter les autres séries
+lines(echantillon_points, mean_row_spam/100, col = "blue", lwd = 1)  # Bleu pour Spam
+lines(echantillon_points, mean_row_mrmr/100, col = "darkgreen", lwd = 1) # Vert pour mRMR
+lines(echantillon_points, mean_row_lasso/100, col = "purple", lwd = 1) # Violet pour HSIC
+
+# Ajouter une légende pour identifier les couleurs
+legend("topleft", legend = c("HSIC", "Spam", "mRMR", "Lasso"), 
+       col = c("red", "blue", "darkgreen", "purple"), lwd = 1,cex=0.8)
+
+
+
