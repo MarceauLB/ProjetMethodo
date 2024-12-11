@@ -1,3 +1,6 @@
+setwd("~/00_Ensai/projet-methodo/ProjetMethodo/r-code/exp_data1_r/")
+
+
 install.packages('GSelection')
 library(GSelection)
 
