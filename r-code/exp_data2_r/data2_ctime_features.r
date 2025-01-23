@@ -34,7 +34,7 @@ write.csv(store_results,file="hsic_time_features.csv",row.names = FALSE)
 
 rm(list=ls())
 
-store_results_data <- read.csv("hsic_time_features.csv")
+store_results_data <- read.csv("times/hsic_time_features.csv")
 
 features <- seq(100,1000,100)
 moyenne_lignes <- rowMeans(store_results_data)

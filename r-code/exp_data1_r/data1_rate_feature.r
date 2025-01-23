@@ -1,8 +1,8 @@
 setwd("~/00_Ensai/projet-methodo/ProjetMethodo/r-code/exp_data1_r/")
 
-####################################################################
-# data 1 
-####################################################################
+#-----------------------------------------------------------------------
+# data 1 : Y = - 2sin(2*X1) + X2**2 + X3 + exp(-X4) + eps 
+#-----------------------------------------------------------------------
 
 rm(list=ls())
 
@@ -15,32 +15,28 @@ set.seed(123)  # Pour reproduire les résultats
 
 data <- as.data.frame(matrix(rnorm(n * p, mean = 0, sd = 1), nrow = n, ncol = p))
 colnames(data) <- paste0("X_", 1:p)
-
 head(data)
 
 epsilon <- rnorm(n,0,1)
 
 Y <- -2*sin(2*data$X_1) + (data$X_2)**2 + data$X_3 + exp(-data$X_4) + epsilon
 
-
-train_index <- sample(1:n, size = 0.8 * n)  # 70% des données pour l'entraînement
+train_index <- sample(1:n, size = round(0.8 * n))  # 70% des données pour l'entraînement
 X_train <- as.matrix(data[train_index, ])
 Y_train <- Y[train_index]
 X_test <- as.matrix(data[-train_index, ])
 Y_test <- Y[-train_index]
 
-# Lasso 
+# Analyse avec le Lasso sur une simulation  
 library(glmnet)
 X <- as.matrix(data)
 lasso_model <- cv.glmnet(X_train, Y_train, alpha = 1, family = "gaussian",nfolds = 5)
 print(lasso_model)
 best_lambda <- lasso_model$lambda.min
 best_lambda
-
 coef(lasso_model, s = best_lambda)
 
 predictions <- predict(lasso_model, s = best_lambda, newx = X_test)
-
 head(predictions)
 sum((Y_test - predictions)**2)
 
@@ -49,9 +45,9 @@ plot(lasso_model$glmnet.fit, xvar = "lambda", label = TRUE)
 
 
 
-####################################################################
-# HSIC 
-####################################################################
+#-----------------------------------------------------------------------
+# Performance of HSIC  
+#-----------------------------------------------------------------------
 
 rm(list=ls())
 # install.packages('GSelection')
@@ -89,10 +85,9 @@ write.csv(selected_feature_n, file = "selected_hsic.csv", row.names = FALSE)
 
 
 
-####################################################################
+#-----------------------------------------------------------------------
 # Spam Selections 
-####################################################################
-
+#-----------------------------------------------------------------------
 rm(list=ls())
 
 n <- 250  # Nombre de lignes (observations)
@@ -124,9 +119,10 @@ for(taille_echantillon in 1:16){
 
 write.csv(selected_feature_n, file = "selected_spam.csv", row.names = FALSE)
 
-####################################################################
+
+#-----------------------------------------------------------------------
 # mRMR Selections 
-####################################################################
+#-----------------------------------------------------------------------
 
 rm(list=ls())
 library(mRMRe)
@@ -163,9 +159,10 @@ for(taille_echantillon in 1:16){
 write.csv(selected_feature_mrmr, file = "selected_mrmr.csv", row.names = FALSE)
 
 
-####################################################################
-# Lasso Selections 
-####################################################################
+#-----------------------------------------------------------------------
+# Lasso Classique avec GLMNET 
+#-----------------------------------------------------------------------
+
 rm(list=ls())
 
 library(glmnet)
@@ -209,9 +206,9 @@ for(taille_echantillon in 1:16){
 write.csv(selected_features_lasso, file = "selected_lasso.csv", row.names = FALSE)
 
 
-####################################################################
+
+#-----------------------------------------------------------------------
 # On trace tous les résultats sur un même graphique 
-####################################################################
 rm(list=ls())
 res_lasso <- read.csv("selected_lasso.csv")
 res_spam <- read.csv("selected_spam.csv")
@@ -227,9 +224,9 @@ mean_row_hsic <- rowMeans(res_hsic)
 echantillon_points <- seq(25, 250, by = 15)
 
 plot(echantillon_points, mean_row_hsic / 100, type = "l", 
-     xlab = "Taille de l'échantillon", 
-     ylab = "Moyenne des lignes",
-     main = "Moyenne des lignes par taille d'échantillon",
+     xlab = "Sample Size", 
+     ylab = "Rate of correctly selected features",
+     main = "Data1: Rate of correctly selected features by Sample Size",
      col = "red", lwd = 1)  # Rouge pour Lasso
 
 # Ajouter les autres séries

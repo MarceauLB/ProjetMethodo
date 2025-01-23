@@ -41,7 +41,7 @@ write.csv(store_results,file="hsic_time_samples.csv",row.names = FALSE)
 
 rm(list=ls())
 
-data <- read.csv("hsic_time_samples.csv")
+data <- read.csv("times/hsic_time_samples.csv")
 
 features <- seq(100,1000,100)
 
