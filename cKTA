@@ -1,0 +1,156 @@
+```{r}
+compute_kernel_matrix <- function(X, sigma = 1) {
+  n <- nrow(X)
+  K <- matrix(0, n, n)
+  for (i in 1:n) {
+    for (j in 1:n) {
+      K[i, j] <- exp(-sum((X[i, ] - X[j, ])^2) / (2 * sigma^2))
+    }
+  }
+  return(K)
+}
+
+# Fonction de calcul de HSIC
+compute_HSIC <- function(K, L) {
+  n <- nrow(K)
+  H <- diag(n) - matrix(1, n, n) / n  # Matrice de centrage Γ
+  Kc <- H %*% K %*% H  # Centrage de K
+  Lc <- H %*% L %*% H  # Centrage de L
+  return(sum(diag((Kc %*% Lc)))) 
+}
+
+# Fonction principale pour cKTA
+cKTA <- function(X, y, sigma_X = 1, sigma_Y = 1, epsilon = 1e-6) {
+  d <- ncol(X)  # Nombre de variables
+  n <- nrow(X)  # Nombre d'échantillons
+  
+  # Matrice de Gram de Y
+  L <- compute_kernel_matrix(matrix(y, ncol = 1), sigma_Y)
+  
+  # Calcul des HSIC pour chaque variable X_s
+  HSIC_XY <- numeric(d)
+  HSIC_XX <- matrix(0, d, d)
+  
+  K_list <- list()
+  
+  for (s in 1:d) {
+    K_s <- compute_kernel_matrix(matrix(X[, s], ncol = 1), sigma_X)
+    K_list[[s]] <- K_s
+    HSIC_XY[s] <- compute_HSIC(K_s, L)
+  }
+  
+  for (s in 1:d) {
+    for (t in 1:d) {
+      HSIC_XX[s, t] <- compute_HSIC(K_list[[s]], K_list[[t]])
+    }
+  }
+  
+  # Ajout d'une régularisation pour assurer l'inversibilité de Dmat
+  HSIC_XX <- HSIC_XX + epsilon * diag(d)
+  
+  # Formulation en problème d'optimisation quadratique (QP)
+  library(quadprog)
+  Dmat <- HSIC_XX
+  dvec <- HSIC_XY
+  Amat <- diag(d)  # Contraintes α ≥ 0
+  bvec <- rep(0, d)
+  
+  # Résolution de l'optimisation quadratique
+  sol <- solve.QP(Dmat, dvec, Amat, bvec, meq = 0)
+  alpha <- abs(sol$solution)
+  
+  return(list(alpha = alpha, HSIC_XY = HSIC_XY, HSIC_XX = HSIC_XX))
+}
+
+# Exemple d'utilisation avec des données synthétiques
+set.seed(42)
+X <- matrix(rnorm(10 * 50), nrow = 10, ncol = 50)
+y <- rnorm(10)
+
+result <- cKTA(X, y)
+
+# Affichage des résultats
+print(result$alpha)
+```
+
+```{r}
+compute_kernel_matrix <- function(X, sigma = 1) {
+  # Calcul vectorisé de la distance euclidienne au carré
+  D <- as.matrix(dist(X, method = "euclidean"))^2
+  # Application du noyau gaussien
+  K <- exp(-D / (2 * sigma^2))
+  return(K)
+}
+
+# Fonction de calcul de HSIC optimisée
+compute_HSIC <- function(K, L) {
+  n <- nrow(K)
+  H <- diag(n) - matrix(1, n, n) / n  # Matrice de centrage Γ
+  return(sum((H %*% K %*% H) * (H %*% L %*% H)))  # Utilisation de * au lieu de diag()
+}
+
+# Fonction principale pour cKTA optimisée
+cKTA <- function(X, y, sigma_X = 1, sigma_Y = 1, epsilon = 1e-6) {
+  d <- ncol(X)  # Nombre de variables
+  n <- nrow(X)  # Nombre d'échantillons
+  
+  # Matrice de Gram de Y
+  L <- compute_kernel_matrix(matrix(y, ncol = 1), sigma_Y)
+  
+  # Calcul vectorisé des HSIC
+  K_list <- lapply(1:d, function(s) compute_kernel_matrix(matrix(X[, s], ncol = 1), sigma_X))
+  
+  HSIC_XY <- sapply(K_list, compute_HSIC, L = L)  # Applique compute_HSIC sur chaque K_s
+  
+  HSIC_XX <- outer(1:d, 1:d, Vectorize(function(s, t) compute_HSIC(K_list[[s]], K_list[[t]])))
+  
+  # Ajout d'une régularisation pour assurer l'inversibilité
+  HSIC_XX <- HSIC_XX + epsilon * diag(d)
+  
+  # Formulation en problème d'optimisation quadratique (QP)
+  library(quadprog)
+  Dmat <- HSIC_XX
+  dvec <- HSIC_XY
+  Amat <- diag(d)  # Contraintes α ≥ 0
+  bvec <- rep(0, d)
+  
+  # Résolution de l'optimisation quadratique
+  sol <- solve.QP(Dmat, dvec, Amat, bvec, meq = 0)
+  alpha <- abs(sol$solution)
+  
+  return(list(alpha = alpha, HSIC_XY = HSIC_XY, HSIC_XX = HSIC_XX))
+}
+
+# Exemple d'utilisation avec des données synthétiques
+set.seed(42)
+X <- matrix(rnorm(10 * 50), nrow = 10, ncol = 50)
+y <- rnorm(10)
+
+result <- cKTA(X, y)
+
+# Affichage des résultats
+print(result$alpha)
+```
+
+
+
+```{r}
+n <- 250
+p <- 100
+
+data <- as.data.frame(matrix(rnorm(n * p, mean = 0, sd = 1), nrow = n, ncol = p))
+eps <- rnorm(n,0,1)
+colnames(data) <- paste0("X_", 1:p)
+head(data)
+
+Y <- -2*sin(2*data$X_1) + (data$X_2)**2 + data$X_3 + exp(-data$X_4) + eps
+
+
+result <- cKTA(data, Y)
+
+# Affichage des résultats
+top_indices <- order(result$alpha, decreasing = TRUE)[1:4]
+
+# Afficher les indices des 4 plus grandes valeurs de alpha
+print(top_indices)
+```
