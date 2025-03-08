@@ -1,92 +1,29 @@
+#-----------------------------------------------------------
+#------------------------NON-OPTI---------------------------
+#-----------------------------------------------------------
+
+
+
 ```{r}
 compute_kernel_matrix <- function(X, sigma = 1) {
+  # Calcul plus rapide de la distance au carré via une méthode de produit matriciel
   n <- nrow(X)
-  K <- matrix(0, n, n)
-  for (i in 1:n) {
-    for (j in 1:n) {
-      K[i, j] <- exp(-sum((X[i, ] - X[j, ])^2) / (2 * sigma^2))
-    }
-  }
-  return(K)
-}
-
-# Fonction de calcul de HSIC
-compute_HSIC <- function(K, L) {
-  n <- nrow(K)
-  H <- diag(n) - matrix(1, n, n) / n  # Matrice de centrage Γ
-  Kc <- H %*% K %*% H  # Centrage de K
-  Lc <- H %*% L %*% H  # Centrage de L
-  return(sum(diag((Kc %*% Lc)))) 
-}
-
-# Fonction principale pour cKTA
-cKTA <- function(X, y, sigma_X = 1, sigma_Y = 1, epsilon = 1e-6) {
-  d <- ncol(X)  # Nombre de variables
-  n <- nrow(X)  # Nombre d'échantillons
-  
-  # Matrice de Gram de Y
-  L <- compute_kernel_matrix(matrix(y, ncol = 1), sigma_Y)
-  
-  # Calcul des HSIC pour chaque variable X_s
-  HSIC_XY <- numeric(d)
-  HSIC_XX <- matrix(0, d, d)
-  
-  K_list <- list()
-  
-  for (s in 1:d) {
-    K_s <- compute_kernel_matrix(matrix(X[, s], ncol = 1), sigma_X)
-    K_list[[s]] <- K_s
-    HSIC_XY[s] <- compute_HSIC(K_s, L)
-  }
-  
-  for (s in 1:d) {
-    for (t in 1:d) {
-      HSIC_XX[s, t] <- compute_HSIC(K_list[[s]], K_list[[t]])
-    }
-  }
-  
-  # Ajout d'une régularisation pour assurer l'inversibilité de Dmat
-  HSIC_XX <- HSIC_XX + epsilon * diag(d)
-  
-  # Formulation en problème d'optimisation quadratique (QP)
-  library(quadprog)
-  Dmat <- HSIC_XX
-  dvec <- HSIC_XY
-  Amat <- diag(d)  # Contraintes α ≥ 0
-  bvec <- rep(0, d)
-  
-  # Résolution de l'optimisation quadratique
-  sol <- solve.QP(Dmat, dvec, Amat, bvec, meq = 0)
-  alpha <- abs(sol$solution)
-  
-  return(list(alpha = alpha, HSIC_XY = HSIC_XY, HSIC_XX = HSIC_XX))
-}
-
-# Exemple d'utilisation avec des données synthétiques
-set.seed(42)
-X <- matrix(rnorm(10 * 50), nrow = 10, ncol = 50)
-y <- rnorm(10)
-
-result <- cKTA(X, y)
-
-# Affichage des résultats
-print(result$alpha)
-```
-
-```{r}
-compute_kernel_matrix <- function(X, sigma = 1) {
-  # Calcul vectorisé de la distance euclidienne au carré
-  D <- as.matrix(dist(X, method = "euclidean"))^2
+  XX <- rowSums(X^2)
+  D <- outer(XX, XX, FUN = "+") - 2 * X %*% t(X)
+  D[D < 0] <- 0  # En cas de petites erreurs numériques
   # Application du noyau gaussien
   K <- exp(-D / (2 * sigma^2))
   return(K)
 }
 
-# Fonction de calcul de HSIC optimisée
+# Fonction optimisée de calcul de HSIC
 compute_HSIC <- function(K, L) {
   n <- nrow(K)
   H <- diag(n) - matrix(1, n, n) / n  # Matrice de centrage Γ
-  return(sum((H %*% K %*% H) * (H %*% L %*% H)))  # Utilisation de * au lieu de diag()
+  # Calcul du produit matriciel de manière plus rapide
+  KH = H %*% K %*% H
+  LH = H %*% L %*% H
+  return(sum(KH * LH))  # Utilisation de * pour le produit élément par élément
 }
 
 # Fonction principale pour cKTA optimisée
@@ -97,18 +34,27 @@ cKTA <- function(X, y, sigma_X = 1, sigma_Y = 1, epsilon = 1e-6) {
   # Matrice de Gram de Y
   L <- compute_kernel_matrix(matrix(y, ncol = 1), sigma_Y)
   
-  # Calcul vectorisé des HSIC
+  # Calcul des matrices de noyau pour chaque variable X de manière plus optimisée
   K_list <- lapply(1:d, function(s) compute_kernel_matrix(matrix(X[, s], ncol = 1), sigma_X))
   
-  HSIC_XY <- sapply(K_list, compute_HSIC, L = L)  # Applique compute_HSIC sur chaque K_s
+  # Calcul des HSIC_XY plus rapidement en parallèle
+  HSIC_XY <- sapply(K_list, function(K_s) compute_HSIC(K_s, L))
   
-  HSIC_XX <- outer(1:d, 1:d, Vectorize(function(s, t) compute_HSIC(K_list[[s]], K_list[[t]])))
+  # Calcul des HSIC_XX (matrice d'interactions entre les différentes dimensions de X)
+  HSIC_XX <- matrix(0, nrow = d, ncol = d)
+  for (s in 1:d) {
+    for (t in s:d) {
+      HSIC_XX[s, t] <- compute_HSIC(K_list[[s]], K_list[[t]])
+      if (s != t) {
+        HSIC_XX[t, s] <- HSIC_XX[s, t]  # Matrice symétrique
+      }
+    }
+  }
   
   # Ajout d'une régularisation pour assurer l'inversibilité
   HSIC_XX <- HSIC_XX + epsilon * diag(d)
   
-  # Formulation en problème d'optimisation quadratique (QP)
-  library(quadprog)
+  # Formulation du problème d'optimisation quadratique (QP)
   Dmat <- HSIC_XX
   dvec <- HSIC_XY
   Amat <- diag(d)  # Contraintes α ≥ 0
@@ -120,23 +66,114 @@ cKTA <- function(X, y, sigma_X = 1, sigma_Y = 1, epsilon = 1e-6) {
   
   return(list(alpha = alpha, HSIC_XY = HSIC_XY, HSIC_XX = HSIC_XX))
 }
-
-# Exemple d'utilisation avec des données synthétiques
-set.seed(42)
-X <- matrix(rnorm(10 * 50), nrow = 10, ncol = 50)
-y <- rnorm(10)
-
-result <- cKTA(X, y)
-
-# Affichage des résultats
-print(result$alpha)
 ```
 
 
+#-----------------------------------------------------------
+#--------------------------OPTI-----------------------------
+#-----------------------------------------------------------
+
 
 ```{r}
-n <- 250
-p <- 100
+library(quadprog)
+library(parallel)
+
+# Fonction optimisée de calcul de la matrice de noyau
+compute_kernel_matrix <- function(X, sigma = 1) {
+  n <- nrow(X)
+  XX <- rowSums(X^2)  # Calcul de la somme des carrés de chaque ligne
+  D <- outer(XX, XX, FUN = "+") - 2 * X %*% t(X)
+  D[D < 0] <- 0  # Corriger les erreurs numériques dues aux petites valeurs négatives
+  K <- exp(-D / (2 * sigma^2))  # Noyau gaussien
+  return(K)
+}
+
+# Fonction optimisée de calcul de HSIC
+compute_HSIC <- function(K, L) {
+  n <- nrow(K)
+  H <- diag(n) - matrix(1, n, n) / n  # Matrice de centrage Γ
+  KH = H %*% K %*% H
+  LH = H %*% L %*% H
+  return(sum(KH * LH))  # Produit élément par élément
+}
+
+# Fonction principale optimisée pour cKTA
+cKTA <- function(X, y, sigma_X = 1, sigma_Y = 1, epsilon = 1e-6) {
+  d <- ncol(X)  # Nombre de variables
+  n <- nrow(X)  # Nombre d'échantillons
+  
+  # Matrice de Gram de y
+  L <- compute_kernel_matrix(matrix(y, ncol = 1), sigma_Y)
+  
+  # Calcul parallèle des noyaux pour chaque variable de X
+  K_list <- mclapply(1:d, function(s) compute_kernel_matrix(matrix(X[, s], ncol = 1), sigma_X), mc.cores = detectCores())
+  
+  # Calcul parallèle des HSIC_XY
+  HSIC_XY <- unlist(mclapply(K_list, function(K_s) compute_HSIC(K_s, L), mc.cores = detectCores()))
+  
+  # Calcul parallèle de la matrice HSIC_XX (partie supérieure symétrique)
+  HSIC_XX <- matrix(0, nrow = d, ncol = d)
+  
+  # Utilisation de mclapply pour calculer la matrice HSIC_XX de manière efficace
+  result_HSIC_XX <- mclapply(1:d, function(s) {
+    res <- sapply(s:d, function(t) {
+      HSIC_val <- compute_HSIC(K_list[[s]], K_list[[t]])
+      return(c(s, t, HSIC_val))  # Retourner sous forme de vecteur avec [s, t, HSIC_val]
+    })
+    return(res)
+  }, mc.cores = detectCores())
+  
+  
+  # Remplir la matrice HSIC_XX à partir des résultats parallélisés
+  for (i in 1:length(result_HSIC_XX)) {
+    for (j in 1:ncol(result_HSIC_XX[[i]])) {
+      s <- result_HSIC_XX[[i]][1, j]  # Premier élément de chaque vecteur
+      t <- result_HSIC_XX[[i]][2, j]  # Deuxième élément de chaque vecteur
+      HSIC_val <- result_HSIC_XX[[i]][3, j]  # Troisième élément de chaque vecteur
+      
+      if (s <= d && t <= d) {  # Vérification que les indices sont dans les limites
+        HSIC_XX[s, t] <- HSIC_val
+        HSIC_XX[t, s] <- HSIC_val  # Matrice symétrique
+      }
+    }
+  }
+  
+  # Ajouter une régularisation pour éviter l'inversibilité de la matrice
+  HSIC_XX <- HSIC_XX + epsilon * diag(d)
+  
+  # Problème d'optimisation quadratique
+  Dmat <- HSIC_XX
+  dvec <- HSIC_XY
+  Amat <- diag(d)  # Contraintes α ≥ 0
+  bvec <- rep(0, d)
+  
+  # Résolution de l'optimisation quadratique
+  sol <- tryCatch({
+    solve.QP(Dmat, dvec, Amat, bvec, meq = 0)
+  }, error = function(e) {
+    message("Erreur lors de l'optimisation : ", e$message)
+    return(NULL)
+  })
+  
+  if (is.null(sol)) {
+    stop("L'optimisation quadratique a échoué.")
+  }
+  
+  alpha <- abs(sol$solution)
+  
+  return(list(alpha = alpha, HSIC_XY = HSIC_XY, HSIC_XX = HSIC_XX))
+}
+```
+
+
+#-----------------------------------------------------------
+#----------------------EXPERIENCES--------------------------
+#-----------------------------------------------------------
+
+
+```{r}
+n <- 200
+p <- 1000
 
 data <- as.data.frame(matrix(rnorm(n * p, mean = 0, sd = 1), nrow = n, ncol = p))
 eps <- rnorm(n,0,1)
