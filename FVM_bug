@@ -13,7 +13,7 @@ solve_fvm_qp <- function(D, Dy, lambda = 1, epsilon = 1) {
   
   # Matrice de contraintes
   A <- rbind(D, -D)  # Chaque colonne dk définit une contrainte sur alpha
-  b <- c(Dy + lambda / 2, -Dy + lambda / 2)  # Second membre des contraintes
+  b <- c(Dy - lambda / 2, -Dy - lambda / 2)  # Second membre des contraintes
   
   # Résolution du problème quadratique
   sol <- tryCatch(
