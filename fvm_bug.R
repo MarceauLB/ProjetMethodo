@@ -1,0 +1,72 @@
+library(quadprog)
+library(infotheo)
+
+# Fonction pour résoudre le problème quadratique
+solve_fvm_qp <- function(D, Dy, lambda = 1, epsilon = 1) {
+  d <- ncol(D)  # Nombre de variables
+  
+  # Vérifier si D est bien définie positive
+  Dmat <- D + epsilon * diag(d)  # Ajout d'un petit terme diagonal pour éviter les problèmes numériques
+  
+  # Terme linéaire de l'objectif (pas de terme linéaire ici)
+  dvec <- rep(0, d)
+  
+  # Matrice de contraintes
+  A <- rbind(D, -D)  # Chaque colonne dk définit une contrainte sur alpha
+  b <- c(Dy - lambda / 2, -Dy - lambda / 2)  # Second membre des contraintes
+  
+  # Résolution du problème quadratique
+  sol <- tryCatch(
+    {
+      solve.QP(Dmat = Dmat, dvec = dvec, Amat = t(A), bvec = b, meq = 0)
+    },
+    error = function(e) {
+      message("Problème d'optimisation :", e$message)
+      return(NULL)
+    }
+  )
+  
+  if (!is.null(sol)) {
+    return(sol$solution)
+  } else {
+    return(rep(NA, d))
+  }
+}
+
+# Fonction pour calculer la matrice D basée sur l'information mutuelle
+compute_D_matrix <- function(X) {
+  n <- ncol(X)
+  D <- matrix(0, n, n)
+  for (i in 1:n) {
+    for (j in i:n) {
+      if (i != j) {
+        mi <- mutinformation(discretize(X[, i]), discretize(X[, j]))
+        D[i, j] <- mi
+        D[j, i] <- mi
+      }
+    }
+  }
+  diag(D) <- diag(D) + 1  # Ajout d'une régularisation sur la diagonale
+  return(D)
+}
+
+# Génération des données
+set.seed(123)
+n <- 200  # Nombre d'observations
+p <- 100   # Nombre de variables
+
+data <- as.data.frame(matrix(rnorm(n * p), nrow = n, ncol = p))
+colnames(data) <- paste0("X_", 1:p)
+
+eps <- rnorm(n, 0, 1)
+Y <- -2*sin(2*data$X_1) + (data$X_2)^2 + data$X_3 + exp(-data$X_4) + eps
+
+# Calcul de la matrice D et du vecteur Dy
+D <- compute_D_matrix(data)
+Dy <- sapply(1:p, function(k) mutinformation(discretize(data[, k]), discretize(Y)))
+
+# Résolution du problème quadratique avec lambda = 1
+alpha <- solve_fvm_qp(D, Dy, lambda = 1)
+
+# Affichage des coefficients obtenus
+print(alpha)
