@@ -1,0 +1,114 @@
+library(quadprog)
+library(parallel)
+
+# Fonction optimisée de calcul du noyau gaussien
+compute_kernel_matrix <- function(X, sigma = 1) {
+  X <- as.matrix(X)  # Assurez-vous que X est une matrice numérique
+  n <- nrow(X)
+  XX <- rowSums(X^2)  # Calcul de la somme des carrés de chaque ligne
+  D <- outer(XX, XX, FUN = "+") - 2 * X %*% t(X)
+  D[D < 0] <- 0  # Corriger les erreurs numériques dues aux petites valeurs négatives
+  K <- exp(-D / (2 * sigma^2))  # Noyau gaussien
+  return(K)
+}
+
+# Fonction optimisée de calcul du critère NOCCO entre deux matrices
+compute_NOCCO <- function(K, L, epsilon = 1e-6) {
+  n <- nrow(K)
+  H <- diag(n) - matrix(1, n, n) / n  # Matrice de centrage Γ
+  bar_K <- H %*% K %*% H  # Bar{K}
+  bar_L <- H %*% L %*% H  # Bar{L}
+  
+  # Calcul de tilde{K} et tilde{L}
+  tilde_K <- bar_K %*% solve(bar_K + epsilon * n * diag(n))
+  tilde_L <- bar_L %*% solve(bar_L + epsilon * n * diag(n))
+  
+  # Calcul du critère NOCCO
+  return(sum(diag(tilde_K %*% tilde_L)))
+}
+
+# Calcul de la matrice D avec NOCCO entre chaque paire de variables
+compute_D_matrix <- function(X, epsilon = 1e-5) {
+  X <- as.matrix(X)  # Assurez-vous que X est une matrice numérique
+  d <- ncol(X)  # Nombre de variables (d)
+  
+  # Calculer les matrices de noyau pour chaque variable u_s en parallèle
+  K_list <- mclapply(1:d, function(s) compute_kernel_matrix(X[, s, drop = FALSE]), mc.cores = detectCores())
+  
+  # Initialisation de la matrice D
+  D_matrix <- matrix(0, d, d)
+  
+  # Calcul des NOCCO entre chaque paire de noyaux
+  for (k in 1:d) {
+    for (l in k:d) {  # Commencer l'itération sur l à partir de k pour éviter les redondances
+      D_matrix[k, l] <- compute_NOCCO(K_list[[k]], K_list[[l]], epsilon)
+      D_matrix[l, k] <- D_matrix[k, l]  # Utilisation de la symétrie
+    }
+  }
+  
+  return(D_matrix)
+}
+
+# Calcul du vecteur D_y
+compute_Dy_vector <- function(X, y, epsilon = 1e-6) {
+  X <- as.matrix(X)  # Assurez-vous que X est une matrice numérique
+  y <- as.matrix(y)  # Assurez-vous que y est une matrice numérique
+  d <- ncol(X)  # Nombre de variables (d)
+  
+  # Calcul du noyau pour la variable cible y
+  K_y <- compute_kernel_matrix(y)
+  
+  # Calculer les noyaux pour chaque variable de X en parallèle
+  Dy_vector <- mclapply(1:d, function(l) {
+    K_l <- compute_kernel_matrix(X[, l, drop = FALSE])
+    compute_NOCCO(K_l, K_y, epsilon)
+  }, mc.cores = detectCores())
+  
+  return(unlist(Dy_vector))
+}
+
+# Résolution du problème d'optimisation quadratique
+solve_NOCCO <- function(X, Y, epsilon = 1e-6, lambda = 3) {
+  X <- as.matrix(X)  # Assurez-vous que X est une matrice numérique
+  Y <- as.matrix(Y)  # Assurez-vous que Y est une matrice numérique
+  d <- ncol(X)  # Nombre de variables
+  
+  # Calcul des matrices D et D_y
+  Dmat <- compute_D_matrix(X, epsilon)
+  dvec <- compute_Dy_vector(X, Y, epsilon) - lambda  # Ajouter lambda à Dy
+  
+  # Contraintes : alpha ≥ 0
+  Amat <- diag(d)  # Contraintes α ≥ 0
+  bvec <- rep(0, d)  # α ≥ 0 (vecteur de zéros)
+
+  # Résolution de l'optimisation quadratique
+  sol <- tryCatch({
+    solve.QP(Dmat, dvec, Amat, bvec, meq = 0)
+  }, error = function(e) {
+    message("Erreur lors de l'optimisation : ", e$message)
+    return(NULL)
+  })
+  
+  if (is.null(sol)) {
+    stop("L'optimisation quadratique a échoué.")
+  }
+  
+  # Récupérer la solution alpha
+  alpha <- abs(sol$solution)
+  
+  return(alpha)
+}
+
+# Test de la fonction avec des données générées
+n <- 150  # Nombre d'observations
+p <- 156   # Nombre de variables
+
+data <- as.data.frame(matrix(rnorm(n * p), nrow = n, ncol = p))
+colnames(data) <- paste0("X_", 1:p)
+
+eps <- rnorm(n, 0, 1)
+Y <- -2 * sin(2 * data$X_1) + (data$X_2)^2 + data$X_3 + exp(-data$X_4) + eps
+
+alpha_solution <- solve_NOCCO(data, Y, epsilon = 1e-6, lambda = 1)
+selected_features <- order(alpha_solution, decreasing = TRUE)[1:4]
+print(selected_features)
