@@ -10,6 +10,6 @@ res_score <- function(features_index, m_val, X){
       red <- red + abs(correlation_matrix[k,l])
     }
   }
-  red <- red/(m_val*(m_val-1))
+  red <- 2*(red/(m_val*(m_val-1)))
   return(red)
 }
