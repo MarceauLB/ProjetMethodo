@@ -1,6 +1,6 @@
 # figure data1 
 rm(list=ls())
-setwd("../rate_features_data1/")
+setwd("../simulated-dataset/r-code/rate_features_data1/")
 
 res_lasso <- read.csv("selected_lasso_data1.csv")
 res_spam <- read.csv("selected_spam_data1.csv")

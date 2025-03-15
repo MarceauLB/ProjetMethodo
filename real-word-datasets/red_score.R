@@ -3,7 +3,7 @@ rm(list=ls())
 
 res_score <- function(features_index, m_val, X){
   features_values <- X[,features_index]  
-  correlation_matrix <- cor(X)
+  correlation_matrix <- cor(features_values)
   red <- 0 
   for(l in 1:(m_val-1)){
     for(k in (l+1):m_val){
