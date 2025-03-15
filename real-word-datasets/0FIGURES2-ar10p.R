@@ -32,17 +32,20 @@ sqrt(var(red_lasso_vec))
 mean(red_enet_vec)
 sqrt(var(red_enet_vec))
 
-plot(features_index,cmean_mrmr,type="l",col="darkgreen",ylim=c(0,1),
+features_index <- seq(10,50,10)
+plot(features_index,cmean_mrmr,type="l",col="cyan",ylim=c(0,1),
      main="Mean Classification Accuracy",
-     xlab ="Top Features Selections")
-lines(features_index,cmean_enet,type="l",col="salmon",ylim=c(0,1))
-lines(features_index,cmean_lasso,type="l",col="purple",ylim=c(0,1))
+     xlab ="Top Features Selections",
+     lwd=2)
+lines(features_index,cmean_enet,type="l",col="salmon",lwd=2)
+lines(features_index,cmean_lasso,type="l",col="purple",lwd=2)
 
 
 # Add a legend
+
 legend("bottomright", legend = c("HSIC", "Spam", "mRMR", "Lasso", "CKTA", "QPFS", "ENet"), 
-       col = c("red", "blue", "darkgreen", "purple", "orange", "brown", "salmon"), 
-       lwd = 1, cex = 0.6)
+       col = c("black", "green", "cyan", "purple", "yellow", "red", "salmon"), 
+       lwd = 2, cex = 0.6)
 
 
 

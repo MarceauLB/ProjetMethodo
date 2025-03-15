@@ -1,6 +1,6 @@
 # figure data1 
 rm(list=ls())
-setwd("../simulated-dataset/r-code/rate_features_data1/")
+setwd("../r-code/rate_features_data1/")
 
 res_lasso <- read.csv("selected_lasso_data1.csv")
 res_spam <- read.csv("selected_spam_data1.csv")
@@ -25,20 +25,21 @@ plot(echantillon_points, mean_row_hsic / 100, type = "l",
      xlab = "Sample Size", 
      ylab = "Rate of Correctly Selected Features",
      main = "Rate of Correctly Selected Features by Sample Size",
-     col = "red", lwd = 1,
+     col = "black", lwd = 2,
      ylim=range(c(0,1)))
 
-lines(echantillon_points, mean_row_spam / 100, col = "blue", lwd = 1)   # Spam
-lines(echantillon_points, mean_row_mrmr / 100, col = "darkgreen", lwd = 1) # mRMR
-lines(echantillon_points, mean_row_lasso / 100, col = "purple", lwd = 1) # Lasso
-lines(echantillon_points, mean_row_ckta / 100, col = "orange", lwd = 1) # CKTA
-lines(echantillon_points, mean_row_qpfs / 100, col = "brown", lwd = 1) # QPFS
-lines(echantillon_points, mean_row_enet / 100, col = "salmon", lwd = 1) # ENet
+lines(echantillon_points, mean_row_spam / 100, col = "green", lwd = 2)   # Spam
+lines(echantillon_points, mean_row_mrmr / 100, col = "cyan", lwd = 2) # mRMR
+lines(echantillon_points, mean_row_lasso / 100, col = "purple", lwd = 2) # Lasso
+lines(echantillon_points, mean_row_ckta / 100, col = "yellow", lwd = 2) # CKTA
+lines(echantillon_points, mean_row_qpfs / 100, col = "red", lwd = 2) # QPFS
+lines(echantillon_points, mean_row_enet / 100, col = "salmon", lwd = 2) # ENet
+#lines(echantillon_points, mean_row_nocco / 100, col = "blue", lwd = 2) # Nocco Lasso 
 
 # Add a legend
-legend("topleft", legend = c("HSIC", "Spam", "mRMR", "Lasso", "CKTA", "QPFS", "ENet"), 
-       col = c("red", "blue", "darkgreen", "purple", "orange", "brown", "salmon"), 
-       lwd = 1, cex = 0.6)
+legend("bottomright", legend = c("HSIC", "Spam", "mRMR", "Lasso", "CKTA", "QPFS", "ENet"), 
+       col = c("black", "green", "cyan", "purple", "yellow", "red", "salmon"), 
+       lwd = 2, cex = 0.6)
 
 # figure data2 
 rm(list=ls())
@@ -68,21 +69,19 @@ plot(echantillon_points, mean_row_hsic / 100, type = "l",
      xlab = "Sample Size", 
      ylab = "Rate of Correctly Selected Features",
      main = "Rate of Correctly Selected Features by Sample Size",
-     col = "red", lwd = 1,
+     col = "black", lwd = 2,
      ylim=range(c(0,1)))
 
-lines(echantillon_points, mean_row_spam / 100, col = "blue", lwd = 1)   # Spam
-lines(echantillon_points, mean_row_mrmr / 100, col = "darkgreen", lwd = 1) # mRMR
-lines(echantillon_points, mean_row_lasso / 100, col = "purple", lwd = 1) # Lasso
-lines(echantillon_points, mean_row_ckta / 100, col = "orange", lwd = 1) # CKTA
-lines(echantillon_points, mean_row_qpfs / 100, col = "brown", lwd = 1) # QPFS
-lines(echantillon_points, mean_row_enet / 100, col = "salmon", lwd = 1) # ENet
+lines(echantillon_points, mean_row_spam / 100, col = "green", lwd = 2)   # Spam
+lines(echantillon_points, mean_row_mrmr / 100, col = "cyan", lwd = 2) # mRMR
+lines(echantillon_points, mean_row_lasso / 100, col = "purple", lwd = 2) # Lasso
+lines(echantillon_points, mean_row_ckta / 100, col = "yellow", lwd = 2) # CKTA
+lines(echantillon_points, mean_row_qpfs / 100, col = "red", lwd = 2) # QPFS
+lines(echantillon_points, mean_row_enet / 100, col = "salmon", lwd = 2) # ENet
+#lines(echantillon_points, mean_row_nocco / 100, col = "blue", lwd = 2) # Nocco Lasso 
 
 # Add a legend
-legend("topleft", legend = c("HSIC", "Spam", "mRMR", "Lasso", "CKTA", "QPFS", "ENet"), 
-       col = c("red", "blue", "darkgreen", "purple", "orange", "brown", "salmon"), 
-       lwd = 1, cex = 0.6)
-
-
-
+legend("bottomright", legend = c("HSIC", "Spam", "mRMR", "Lasso", "CKTA", "QPFS", "ENet"), 
+       col = c("black", "green", "cyan", "purple", "yellow", "red", "salmon"), 
+       lwd = 2, cex = 0.6)
 
