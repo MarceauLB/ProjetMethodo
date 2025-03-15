@@ -1,6 +1,6 @@
 # figure data1 
 rm(list=ls())
-setwd("../rate_features_data1/")
+setwd("simulated-dataset/r-code/rate_features_data1/")
 
 res_lasso <- read.csv("selected_lasso_data1.csv")
 res_spam <- read.csv("selected_spam.csv")
@@ -38,9 +38,6 @@ lines(echantillon_points, mean_row_enet / 100, col = "salmon", lwd = 1) # ENet
 legend("topleft", legend = c("HSIC", "Spam", "mRMR", "Lasso", "CKTA", "QPFS", "ENet"), 
        col = c("red", "blue", "darkgreen", "purple", "orange", "brown", "salmon"), 
        lwd = 1, cex = 0.6)
-
-
-
 
 # figure data2 
 rm(list=ls())
