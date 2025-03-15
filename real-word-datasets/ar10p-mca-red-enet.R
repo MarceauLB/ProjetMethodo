@@ -29,7 +29,7 @@ for(i in 1:rep){
   X_test <- X[-x_index,]
   Y_test <- Y[-x_index]
   
-  cv_fit <- cv.glmnet(X_train, Y_train,family="multinomial", alpha = 1)
+  cv_fit <- cv.glmnet(X_train, Y_train,family="multinomial", alpha = 0.5)
   best_lambda <- cv_fit$lambda.min
   coeff_list <- coef(cv_fit)
   coefficients_matrix <- do.call(cbind, lapply(coeff_list, function(mat) as.numeric(mat[-1, ])))
@@ -56,8 +56,12 @@ mean(MCAcc[5,])
 sqrt(var(MCAcc[5,]))
 rowMeans(RED_table50)
 sqrt(var(RED_table50[1,]))
-
 plot(features_index,rmean,type="l",col="blue",ylim=c(0,1))
 
-write(MCAcc,"ar10p_lasso_mca.csv",append = FALSE)
-write(RED_table50,"ar10p_lasso_red50.csv",append = FALSE)
+write(MCAcc,"ar10p_mca_enet.csv",append = FALSE)
+write(RED_table50,"ar10p_red50_enet.csv",append = FALSE)
+
+
+write(MCAcc,"ar10p_enet_mca.csv",append = FALSE)
+write(RED_table50,"ar10p_enet_red50.csv",append = FALSE)
+

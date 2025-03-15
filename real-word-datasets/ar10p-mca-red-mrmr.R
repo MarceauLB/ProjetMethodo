@@ -16,8 +16,8 @@ X <- as.data.frame(scale(X,center = TRUE,scale = TRUE))
 rep <- 50
 features_index <- seq(10,50,10)
 top_m <- features_index[length(features_index)]
-MCAcc_mrmr <- matrix(0,nrow = length(features_index),ncol = rep)
-RED_table50_mrmr <- matrix(0,ncol=rep,nrow=1)
+MCAcc <- matrix(0,nrow = length(features_index),ncol = rep)
+RED_table50 <- matrix(0,ncol=rep,nrow=1)
 
 for(i in 1:rep){
   x_index <- sample(1:n,size = round(n*0.8),replace = FALSE)
@@ -36,19 +36,22 @@ for(i in 1:rep){
                      kernel = "rbfdot",
                      kpar = list(sigma = 0.1))
     y_pred <- predict(model, X_test[,c(x_features)])
-    MCAcc_mrmr[m_index,i] <- sum(y_pred==Y_test)/length(Y_test)
+    MCAcc[m_index,i] <- sum(y_pred==Y_test)/length(Y_test)
     
     if(nb_features == top_m){
-      RED_table50_mrmr[1,i] <- res_score(x_features, nb_features, X_train)
+      RED_table50[1,i] <- res_score(x_features, nb_features, X_train)
     }
   }
 }
 
-rmean_mrmr <- rowMeans(MCAcc_mrmr)
-mean(MCAcc_mrmr[5,])
-sqrt(var(MCAcc_mrmr[5,]))
-sqrt(var(RED_table50_mrmr[1,]))
-plot(features_index,rmean_mrmr,type="l",col="cyan",ylim=c(0,1))
+rmean <- rowMeans(MCAcc)
+mean(MCAcc[5,])
+sqrt(var(MCAcc[5,]))
+rowMeans(RED_table50)
+sqrt(var(RED_table50[1,]))
 
-write(MCAcc_mrmr,"ar10p_mca_MRMR.csv",append = FALSE)
-write(RED_table50_mrmr,"ar10p_red50_MRMR.csv",append = FALSE)
+
+plot(features_index,rmean,type="l",col="cyan",ylim=c(0,1))
+
+write(MCAcc,"ar10p_mrmr_mca.csv",append = FALSE)
+write(RED_table50,"ar10p_mrmr_red50.csv",append = FALSE)
