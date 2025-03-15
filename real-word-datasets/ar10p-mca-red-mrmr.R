@@ -1,10 +1,7 @@
 rm(list=ls())
 set.seed(12345)
 
-library(GSelection)
 library(praznik)
-library(glmnet)
-library(kernlab)
 source("red_score.R")
 
 X <- read.csv("ar10p.csv")
@@ -12,6 +9,7 @@ n <- dim(X)[1]
 p <- dim(X)[2]-1
 Y <- X[,-(1:p)]
 X <- X[,-(p+1)]
+X <- as.data.frame(scale(X,center = TRUE,scale = TRUE))
 
 # Work done for mrmr 
 #--------------------------------------------------------------------------
