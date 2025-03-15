@@ -11,24 +11,12 @@ do_cv <- function(X,Y,K_fold=5){
   p <- dim(X)[2]
   lambda_seq <- numeric(K_fold)
   
-  # Iteration 1
-  X_indice_train <- sample(c(1:n),size = round(0.8*n),replace = FALSE)
-  X_train <- X[X_indice_train,]
-  Y_train <- Y[X_indice_train]
-  
-  X_val <- X[-X_indice_train,]
-  Y_val <- Y[-X_indice_train]
-  
-  res_samQL <- samQL(X_train, Y_train)
+  # Fixed grid of lambdas on the whole sample
+  res_samQL <- samQL(X, Y)
   grid_lamb <- res_samQL$lambda
-  prediction <- predict(res_samQL,X_val)
-  y_pred_val <- prediction$values
   
-  best_lambda_index <- which.min(colMeans((y_pred_val - Y_val)**2))
-  lambda_seq[1] <- grid_lamb[best_lambda_index]
-  
-  # Other iterations
-  for(k in 2:K_fold){
+  # Iterations (using the previous grid of lambdas)
+  for(k in 1:K_fold){
     X_indice_train <- sample(c(1:n),size = round(0.8*n),replace = FALSE)
     X_train <- X[X_indice_train,]
     Y_train <- Y[X_indice_train]
