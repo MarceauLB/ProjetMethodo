@@ -244,10 +244,10 @@ for(taille_echantillon in 1:10){
   print(taille_echantillon*25)
   selected_feature_ckta2[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 256,3)
 }
-rmean <- rowMeans(selected_feature_ckta2)
+rmean2 <- rowMeans(selected_feature_ckta2)
 
 echantillon_points <- seq(25, 250, by = 25)
-plot(echantillon_points,rmean/100,type="l",
+plot(echantillon_points,rmean2/100,type="l",
      ylim = range(0,1))
-write.csv(selected_feature_ckta2, file = "selected_ckta_data1.csv", row.names = FALSE)
+write.csv(selected_feature_ckta2, file = "selected_ckta_data2.csv", row.names = FALSE)
 

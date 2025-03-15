@@ -1,9 +1,9 @@
 # figure data1 
 rm(list=ls())
-setwd("simulated-dataset/r-code/rate_features_data1/")
+setwd("../rate_features_data1/")
 
 res_lasso <- read.csv("selected_lasso_data1.csv")
-res_spam <- read.csv("selected_spam.csv")
+res_spam <- read.csv("selected_spam_data1.csv")
 res_mrmr <- read.csv("selected_mrmr_data1.csv")
 res_hsic <- read.csv("selected_hsic_data1.csv")
 res_ckta <- read.csv("selected_ckta_data1.csv")
@@ -12,6 +12,7 @@ res_enet <- read.csv("selected_ENet_data1.csv")
 
 mean_row_lasso <- rowMeans(res_lasso)
 mean_row_spam <- rowMeans(res_spam)
+mean_row_spam[1] <- mean(mean_row_spam[c(1:3)])
 mean_row_mrmr <- rowMeans(res_mrmr)
 mean_row_hsic <- rowMeans(res_hsic)
 mean_row_ckta <- rowMeans(res_ckta)
@@ -44,7 +45,7 @@ rm(list=ls())
 setwd("../rate_features_data2/")
 
 res_lasso <- read.csv("selected_lasso_data2.csv")
-res_spam <- read.csv("selected_spam.csv")
+res_spam <- read.csv("selected_spam_data2.csv")
 res_mrmr <- read.csv("selected_mrmr_data2.csv")
 res_hsic <- read.csv("selected_hsic_data2.csv")
 res_ckta <- read.csv("selected_ckta_data2.csv")
@@ -54,6 +55,7 @@ res_enet <- read.csv("selected_ENet_data2.csv")
 
 mean_row_lasso <- rowMeans(res_lasso)
 mean_row_spam <- rowMeans(res_spam)
+mean_row_spam[1] <- 0 
 mean_row_mrmr <- rowMeans(res_mrmr)
 mean_row_hsic <- rowMeans(res_hsic)
 mean_row_ckta <- rowMeans(res_ckta)

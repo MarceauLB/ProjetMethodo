@@ -118,18 +118,18 @@ prc_selected_features <- function(n,p,d){
   return((list_pourcentage))
 }
 
-selected_feature_qpfs <- matrix(nrow = 10,ncol = rep)
+selected_qpfs1 <- matrix(nrow = 10,ncol = rep)
 
 for(taille_echantillon in 1:10){
   print(taille_echantillon*25)
-  selected_feature_qpfs[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 256,4)
+  selected_qpfs1[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 256,4)
 }
-rmean <- rowMeans(selected_feature_qpfs)
+rmean1 <- rowMeans(selected_qpfs1)
 
 echantillon_points <- seq(25, 250, by = 25)
-plot(echantillon_points,rmean/100,type="l",
+plot(echantillon_points,rmean1/100,type="l",
      ylim = range(0,1))
-write.csv(selected_feature_qpfs, file = "selected_qpfs_data1.csv", row.names = FALSE)
+write.csv(selected_qpfs1, file = "selected_qpfs_data1.csv", row.names = FALSE)
 
 # data2
 set.seed(0803)  # Pour reproduire les résultats
@@ -149,17 +149,17 @@ prc_selected_features <- function(n,p,d){
   return((list_pourcentage))
 }
 
-selected_feature_qpfs <- matrix(nrow = 10,ncol = rep)
+selected_qpfs2 <- matrix(nrow = 10,ncol = rep)
 
 for(taille_echantillon in 1:10){
   print(taille_echantillon*25)
-  selected_feature_qpfs[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 256,3)
+  selected_qpfs2[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 256,3)
 }
-rmean <- rowMeans(selected_feature_qpfs)
+rmean2 <- rowMeans(selected_qpfs2)
 
 echantillon_points <- seq(25, 250, by = 25)
-plot(echantillon_points,rmean/100,type="l",
+plot(echantillon_points,rmean2/100,type="l",
      ylim = range(0,1))
-write.csv(selected_feature_qpfs, file = "selected_qpfs.csv", row.names = FALSE)
+write.csv(selected_qpfs2, file = "selected_qpfs_data2.csv", row.names = FALSE)
 
 

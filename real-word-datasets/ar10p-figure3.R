@@ -10,6 +10,10 @@ p <- dim(X)[2]-1
 
 Y <- X[,-(1:p)]
 X <- X[,-(p+1)]
+
+MRMR(ra)
+
+
 indices <- sample(1:n,size = round(0.8*n),replace=FALSE)
 X_train <- X[indices,]
 Y_train <- Y[indices]

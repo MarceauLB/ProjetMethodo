@@ -50,16 +50,16 @@ prc_selected_features <- function(n,p,d){
   return((list_pourcentage))
 }
 
-selected_feature_mrmr <- matrix(nrow = 10,ncol = rep)
+selected_mrmr1 <- matrix(nrow = 10,ncol = rep)
 
 for(taille_echantillon in 1:10){
-  selected_feature_mrmr[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 256,4)
+  selected_mrmr1[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 256,4)
 }
-rmean <- rowMeans(selected_feature_mrmr)
+rmean1 <- rowMeans(selected_mrmr1)
 echantillon_points <- seq(25, 250, by = 25)
-plot(echantillon_points,rmean/100,type="l")
+plot(echantillon_points,rmean1/100,type="l")
 
-write.csv(selected_feature_mrmr, file = "selected_mrmr_prazdata1.csv", row.names = FALSE)
+write.csv(selected_mrmr1, file = "selected_mrmr_data1.csv", row.names = FALSE)
 
 
 
@@ -85,15 +85,16 @@ prc_selected_features <- function(n,p,d){
   return((list_pourcentage))
 }
 
-selected_feature_mrmr2 <- matrix(nrow = 10,ncol = rep)
+selected_mrmr2 <- matrix(nrow = 10,ncol = rep)
 
 for(taille_echantillon in 1:10){
   print(taille_echantillon*25)
-  selected_feature_mrmr2[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 1000,3)
+  selected_mrmr2[taille_echantillon,] <- prc_selected_features(taille_echantillon*25, 1000,3)
 }
-rmean <- rowMeans(selected_feature_mrmr2)
-echantillon_points <- seq(25, 250, by = 25)
-plot(echantillon_points,rmean/100,ylim = c(0,1),type="l")
 
-write.csv(selected_feature_mrmr2, file = "selected_mrmr_prazdata2.csv", row.names = FALSE)
+rmean2 <- rowMeans(selected_mrmr2)
+echantillon_points <- seq(25, 250, by = 25)
+plot(echantillon_points,rmean2/100,ylim = c(0,1),type="l")
+
+write.csv(selected_mrmr2, file = "selected_mrmr_data2.csv", row.names = FALSE)
 

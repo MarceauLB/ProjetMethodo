@@ -40,7 +40,8 @@ write.csv(store_results,file="hsic_time_samples.csv",row.names = FALSE)
 
 
 rm(list=ls())
-data <- read.csv("times/hsic_time_samples.csv")
+setwd("../data2-times-experiments/")
+data <- read.csv("hsic_time_samples.csv")
 features <- seq(100,1000,100)
 
 plot(features, data$V3, type = "l", lty = 3, lwd = 1, 
