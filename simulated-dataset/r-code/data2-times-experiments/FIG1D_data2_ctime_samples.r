@@ -1,6 +1,6 @@
 rm(list=ls())
 
-setwd("~/00_Ensai/projet-methodo/ProjetMethodo/r-code/exp_data2_r/")
+setwd("~/00_Ensai/projet-methodo/ProjetMethodo/simulated-dataset/r-code/data2-times-experiments/")
 
 library(GSelection)
 
@@ -36,27 +36,28 @@ for(d in c(1000, 2000, 3000)){
     print(i)
   }}
 
-write.csv(store_results,file="hsic_time_samples.csv",row.names = FALSE)
+#write.csv(store_results,file="hsic_time_samples.csv",row.names = FALSE)
 
 
 rm(list=ls())
-setwd("../data2-times-experiments/")
 data <- read.csv("hsic_time_samples.csv")
 features <- seq(100,1000,100)
 
-plot(features, data$V3, type = "l", lty = 3, lwd = 1, 
-     xlab = "Numbers of samples", 
+plot(features, data$V3, type = "l", lty = 3, lwd = 3, 
+     xlab = "Number of samples", 
      ylab = "Seconds",
-     main = "Computation time depending on sample size for differents features size for HSIC Lasso", 
      log="y", 
      col="blue")
 
-lines(features, data$V2, lty = 2, lwd = 1, col="red")
-lines(features, data$V1, lty = 1, lwd = 1,col="black")
+lines(features, data$V2, lty = 2, lwd = 3, col="red")
+lines(features, data$V1, lty = 1, lwd = 3,col="black")
 
 
 legend("topleft", legend = c("d=1000", "d=2000", "d=3000"), 
-       lty = c(1,2,3), lwd = 1,cex=1, 
+       lty = c(1,2,3), lwd = 3,cex=1, 
        col=c("black","red","blue"))
 
 
+data <- read.csv("../../../real-word-datasets/dataset_csv/ar10p.csv")
+image_matrix <- matrix(as.numeric(data[1, -ncol(data)]), nrow=50, ncol=48, byrow=TRUE)  # Exclude the last column (label y)
+image(t(image_matrix[nrow(image_matrix):1, ]), col=gray.colors(256))  # Flip the matrix for correct orientation
