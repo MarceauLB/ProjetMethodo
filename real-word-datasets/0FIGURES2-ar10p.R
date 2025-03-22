@@ -7,7 +7,7 @@ enet <- read.csv("ar10p_enet_mca.csv", sep="", header=FALSE)
 ckta <- read.csv("ar10p_ckta_mca.csv", sep="", header=FALSE)
 ckta <- ckta[1:13,]
 qpfs <- read.csv("ar10p_qpfs_mca.csv", sep="", header=FALSE)
-hsic <- read.csv("ar10p_hsic_mca_sigma1.csv", sep=",", header=FALSE)
+hsic <- read.csv("ar10p_hsic_mca.csv", sep=",", header=FALSE)
 
 red_mrmr <- read.csv("ar10p_mrmr_red50.csv", header=FALSE,sep="")
 red_lasso <- read.csv("ar10p_enet_red50.csv", header=FALSE, sep="")
@@ -71,7 +71,13 @@ lines(features_index,cmean_lasso,type="l",col="purple2",lwd=2)
 lines(features_index,cmean_ckta,type="l",col="yellow3",lwd=2)
 lines(features_index,cmean_qpfs,type="l",col="red2",lwd=2)
 lines(features_index,cmean_mrmr,type="l",col="cyan2",lwd=2)
+lines(features_index,cmean_hsic,type="l",col="black",lwd=2)
 legend("bottomright", 
-    legend = c("HSIC", "SPAM",     "mRMR", "Lasso",     "cKTA", "QPFS", "ENet","NOCCO"), 
-       col = c("black", "green2", "cyan2", "purple2", "yellow3", "red2", "orange2","blue"), 
+    legend = c("HSIC",  "mRMR", "Lasso",     "cKTA", "QPFS", "ENet"), 
+       col = c("black","cyan2", "purple2", "yellow3", "red2", "orange2"), 
        lwd = 2, cex = 0.8)
+
+
+hsic_gaussian <- read.csv("hsic_res_gaussian.csv",header = TRUE)
+hsic_gaussian <- as.matrix(hsic_gaussian)
+gs <- rowMeans(hsic_gaussian)

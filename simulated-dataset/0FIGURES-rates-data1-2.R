@@ -1,6 +1,6 @@
 # figure data1 
 rm(list=ls())
-setwd("~/00_Ensai/projet-methodo/ProjetMethodo/simulated-dataset/r-code/rate_features_data1/")
+setwd("~/00_Ensai/projet-methodo/ProjetMethodo/simulated-dataset/rate_features_data1")
 
 res_lasso <- read.csv("selected_lasso_data1.csv")
 res_spam <- read.csv("selected_spam_data1.csv")
@@ -36,7 +36,7 @@ lines(sample_seq, mean_row_ckta / 100, col = "yellow3", lwd = 2) # CKTA
 lines(sample_seq, mean_row_qpfs / 100, col = "red2", lwd = 2) # QPFS
 lines(sample_seq, mean_row_enet / 100, col = "orange2", lwd = 2) # ENet
 lines(sample_seq, mean_row_lasso / 100, col = "purple2", lwd = 2) # Lasso
-abline(h=0.7)
+
 # Add a legend
 legend("bottomright", legend = c("HSIC", "SPAM", "mRMR", "Lasso", "cKTA", "QPFS", "ENet","NOCCO"), 
        col = c("black", "green2", "cyan2", "purple2", "yellow3", "red2", "orange2","blue"), 
@@ -44,17 +44,16 @@ legend("bottomright", legend = c("HSIC", "SPAM", "mRMR", "Lasso", "cKTA", "QPFS"
 
 # figure data2 
 rm(list=ls())
-setwd("~/00_Ensai/projet-methodo/ProjetMethodo/simulated-dataset/r-code/rate_features_data2/")
+setwd("~/00_Ensai/projet-methodo/ProjetMethodo/simulated-dataset/rate_features_data2/")
 
 res_lasso <- read.csv("selected_lasso_data2.csv")
 res_spam <- read.csv("selected_spam_data2.csv")
 res_mrmr <- read.csv("selected_mrmr_data2.csv")
 res_hsic <- read.csv("selected_hsic_data2.csv")
-res_hsic_py <- read.csv("selected_hsic_data1_python.csv")
 res_ckta <- read.csv("selected_ckta_data2.csv")
 res_qpfs <- read.csv("selected_qpfs_data2.csv")
 res_enet <- read.csv("selected_ENet_data2.csv")
-res_nocco <- read.csv("selected_nocco_data2_python.csv")
+res_nocco <- read.csv("selected_nocco_data2.csv")
 
 
 mean_row_lasso <- rowMeans(res_lasso)
@@ -65,7 +64,7 @@ mean_row_hsic <- rowMeans(res_hsic)
 mean_row_ckta <- rowMeans(res_ckta)
 mean_row_qpfs <- rowMeans(res_qpfs)
 mean_row_enet <- rowMeans(res_enet)
-mean_row_nocco <- rowMeans(res_nocco)
+mean_col_nocco <- as.vector(colMeans(res_nocco))
 
 sample_seq <- seq(25, 250, by = 25)
 
@@ -81,7 +80,7 @@ lines(sample_seq, mean_row_lasso / 100, col = "purple2", lwd = 2) # Lasso
 lines(sample_seq, mean_row_ckta / 100, col = "yellow3", lwd = 2) # CKTA
 lines(sample_seq, mean_row_qpfs / 100, col = "red2", lwd = 2) # QPFS
 lines(sample_seq, mean_row_enet / 100, col = "orange2", lwd = 2) # ENet
-lines(sample_seq, mean_row_nocco, col = "blue", lwd = 2) # Nocco Lasso 
+lines(sample_seq, mean_col_nocco, col = "blue", lwd = 2) # Nocco Lasso 
 
 # Add a legend
 legend("bottomright", legend = c("HSIC", "SPAM", "mRMR", "Lasso", "cKTA", "QPFS", "ENet","NOCCO"), 
