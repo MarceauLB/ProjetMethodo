@@ -7,15 +7,14 @@ enet <- read.csv("ar10p_enet_mca.csv", sep="", header=FALSE)
 ckta <- read.csv("ar10p_ckta_mca.csv", sep="", header=FALSE)
 ckta <- ckta[1:13,]
 qpfs <- read.csv("ar10p_qpfs_mca.csv", sep="", header=FALSE)
-hsic <- read.csv("ar10p_hsic_mca.csv", sep=",", header=FALSE)
+hsic <- read.csv("res_hsic/ar10p_hsic_mca_sigma1.csv")
 
 red_mrmr <- read.csv("ar10p_mrmr_red50.csv", header=FALSE,sep="")
 red_lasso <- read.csv("ar10p_enet_red50.csv", header=FALSE, sep="")
 red_enet <- read.csv("ar10p_lasso_red50.csv", header=FALSE, sep="")
 red_ckta <- read.csv("ar10p_ckta_red50.csv")
 red_qpfs <- read.csv("ar10p_qpfs_red50.csv", header=FALSE, sep="")
-red_hsic <- read.csv("ar10p_hsic_red50.csv", header=FALSE, sep=",")
-
+red_hsic <- read.csv("res_hsic/ar10p_hsic_red50.csv", header=FALSE, sep=",")
 
 cmean_mrmr <- colMeans(mrmr)
 cmean_lasso <- colMeans(lasso)
@@ -23,6 +22,7 @@ cmean_enet <- colMeans(enet)
 cmean_ckta <- colMeans(ckta)
 cmean_qpfs <- colMeans(qpfs)
 cmean_hsic <- rowMeans(hsic)
+
 
 # - variance associé à la colonne 5
 sqrt(var(mrmr$V5))
@@ -62,7 +62,7 @@ sqrt(var(red_hsic_vec))
 
 
 features_index <- seq(10,50,10)
-plot(features_index,cmean_hsic,type="l",col="black",ylim=c(0,1),
+plot(features_index,cmean_hsic,type="l",col="black",ylim=c(0.3,1),
      xlab ="Number of extracted features",
      ylab="Mean classification accuracy",
      lwd=2)
@@ -77,7 +77,3 @@ legend("bottomright",
        col = c("black","cyan2", "purple2", "yellow3", "red2", "orange2"), 
        lwd = 2, cex = 0.8)
 
-
-hsic_gaussian <- read.csv("hsic_res_gaussian.csv",header = TRUE)
-hsic_gaussian <- as.matrix(hsic_gaussian)
-gs <- rowMeans(hsic_gaussian)
