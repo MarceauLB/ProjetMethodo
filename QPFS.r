@@ -2,6 +2,8 @@
 install.packages('ks')
 ```
 
+
+#Code non optimisé
 #------------------------------------------------------------
 #-------------------------NON-OPTI---------------------------
 #------------------------------------------------------------
@@ -22,11 +24,9 @@ estimate_mi_simple <- function(X, Y) {
 qpfs_selection <- function(X, y, num_features) {
   n <- ncol(X)  # Nombre de variables
   
-  # Étape 1 : Calcul de la pertinence (Information mutuelle entre X et y)
   relevance <- sapply(1:n, function(i) estimate_mi_simple(X[, i], y))
   print('etape1')
 
-  # Étape 2 : Calcul de la redondance (Information mutuelle entre variables)
   redundancy <- matrix(0, n, n)
   for (i in 1:n) {
     for (j in i:n) {
@@ -39,8 +39,7 @@ qpfs_selection <- function(X, y, num_features) {
   }
   print('etape2')
 
-  # Étape 3 : Problème d'optimisation quadratique
-  Dmat <- redundancy + diag(n) * 10  # Ajout d'une régularisation
+  Dmat <- redundancy + diag(n) * 0.1  # Ajout d'une régularisation
   
   dvec <- relevance
   Amat <- cbind(rep(1, n), diag(n))  # Contraintes alpha >= 0 et somme(alpha) = 1
@@ -56,7 +55,7 @@ qpfs_selection <- function(X, y, num_features) {
 }
 ```
 
-
+#Code optimisé
 #------------------------------------------------------------
 #----------------------------OPTI----------------------------
 #------------------------------------------------------------
@@ -114,16 +113,13 @@ calculate_redundancy <- function(X, n) {
 }
 
 # Fonction optimisée de sélection de variables avec QPFS
-qpfs_selection <- function(X, y, num_features, lambda = 10) {
+qpfs_selection <- function(X, y, num_features, lambda = 0.1) {
   n <- ncol(X)  # Nombre de variables
   
-  # Étape 1 : Calcul de la pertinence (Information mutuelle entre X et y)
   relevance <- apply(X, 2, function(x) estimate_mi_simple(x, y))
   
-  # Étape 2 : Calcul de la redondance (Information mutuelle entre variables)
   redundancy <- calculate_redundancy(X, n)  # Calcul parallélisé de la redondance
   
-  # Étape 3 : Ajout de régularisation pour garantir la positive définition
   Dmat <- redundancy + lambda * diag(n)  # Augmenter lambda si nécessaire
   
   # Étape 4 : Problème d'optimisation quadratique
