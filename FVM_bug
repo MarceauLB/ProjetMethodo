@@ -2,7 +2,7 @@ library(quadprog)
 library(infotheo)
 
 # Fonction pour résoudre le problème quadratique
-solve_fvm_qp <- function(D, Dy, lambda = 1, epsilon = 1) {
+solve_fvm_qp <- function(D, Dy, lambda = 1, epsilon = 0.01) {
   d <- ncol(D)  # Nombre de variables
   
   # Vérifier si D est bien définie positive
@@ -46,7 +46,6 @@ compute_D_matrix <- function(X) {
       }
     }
   }
-  diag(D) <- diag(D) + 1  # Ajout d'une régularisation sur la diagonale
   return(D)
 }
 
