@@ -12,11 +12,11 @@ step <- seq(10,50,10)
 
 plot(step,mean_delta,type="l",
      ylim = c(0,1),col="black",lwd=2,lty=1,
-     xlab="Number of extracted features",
-     ylab="Mean Classification Accuracy")
+     xlab="Nombres de variables extraites",
+     ylab="Taux moyen de classifications correctes")
 lines(step,mean_gaussian,type="l",col="black",lwd=2,lty=2)
 
-legend("bottomright",legend=c("Delta","Gaussian"),
+legend("bottomright",legend=c("Delta","Gaussien"),
        col=c("black","black"),
        lwd=2,
        lty=c(1,2),
