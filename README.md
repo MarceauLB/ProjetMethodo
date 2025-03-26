@@ -1,6 +1,6 @@
 # Projet Méthodologique
 
-Ce dépôt Git correspond aux travaux projet méthodologique réalisés dans le cadre du projet de fin d'études de la filière Génie Statistique (GS), à l'[ENSAI](https://www.ensai.fr).
+Ce dépôt Git correspond aux travaux réalisés dans le cadre du projet méthodologique de fin d'études de la filière Génie Statistique (GS), à l'[ENSAI](https://www.ensai.fr).
 
 Il comprend l'ensemble des codes réalisés en ```R``` et en ```Python``` pour reproduire l'ensemble des graphiques du rapport et du support de présentation du projet. 
 
