@@ -18,7 +18,9 @@ pip install pyHSICLasso
 ## Remarque pour HSICLassoVI (avec l'implémentation du NOCCO Lasso)
 Le package ```HSICLassoVI``` utilisé n'étant pas à jour, l'importation du fichier préconisée via le fichier ```setup.py``` est un échec. 
 
-C'est pourquoi nous avons conservé l'arborescence proposée pour ce package (pour éviter les problèmes de dépendance entre les méthodes de différents fichiers), se trouvant dans ```python-code/nocco_lasso/HSICLassoVI```. Nos implémentations personnelles pour les jeux de données simulés se trouvent quant à eux dans ```python-code/nocco_lasso/HSICLassoVI/models``` : fichiers ```nocco_lasso.py``` et ```storage_csv_plots.py```.
+C'est pourquoi nous avons conservé l'arborescence proposée pour ce package (pour éviter les problèmes de dépendance entre les méthodes de différents fichiers), se trouvant dans ```python-code/nocco_lasso/HSICLassoVI```. 
+
+Nos implémentations personnelles pour les jeux de données simulés se trouvent quant à elles dans ```python-code/nocco_lasso/HSICLassoVI/models``` : fichiers ```nocco_lasso.py``` et ```storage_csv_plots.py```.
 
 
 ## Contributors
