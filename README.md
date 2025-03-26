@@ -1,9 +1,8 @@
-# Projet Méthodologie
+# Projet Méthodologique
 
-Ce git correspond aux travaux projet méthodologique réalisés dans le cadre du projet de fin d'études de la filière Génie Statistique (GS), à l'[ENSAI](https://www.ensai.fr).
-. 
+Ce dépôt Git correspond aux travaux projet méthodologique réalisés dans le cadre du projet de fin d'études de la filière Génie Statistique (GS), à l'[ENSAI](https://www.ensai.fr).
 
-Il comprend l'ensemble des codes réalisés en ```r``` et en ```Python``` pour reproduire l'ensemble des graphiques du rapport et du support de présentation du projet. 
+Il comprend l'ensemble des codes réalisés en ```R``` et en ```Python``` pour reproduire l'ensemble des graphiques du rapport et du support de présentation du projet. 
 
 ## Table des matières
 - [Installation de pyHSICLasso](#installation-pyhsiclasso)
@@ -17,7 +16,7 @@ pip install pyHSICLasso
 ```
 
 ## Remarques pour l'implémentation du NOCCO Lasso (avec HSICLassoVI)
-Le package ```HSICLassoVI``` utilisé n'étant pas à jour, l'importation du fichier préconisée via le fichier ```setup.py``` est un échec. 
+Le package ```HSICLassoVI``` utilisé n'étant pas à jour, l'importation du fichier préconisée via le fichier ```setup.py``` a été un échec. 
 
 C'est pourquoi nous avons conservé l'arborescence proposée pour ce package (pour éviter les problèmes de dépendance entre les méthodes de différents fichiers), se trouvant dans ```python-code/nocco_lasso/HSICLassoVI```. 
 
