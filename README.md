@@ -1,9 +1,9 @@
 # Projet Méthodologie
 
-Ce git correspond aux projets méthodologie réalisés dans le cadre du projet de fin d'étude de la filière Génie Statistique (GS), à l'[ENSAI](https://www.ensai.fr).
+Ce git correspond aux travaux projet méthodologique réalisés dans le cadre du projet de fin d'études de la filière Génie Statistique (GS), à l'[ENSAI](https://www.ensai.fr).
 . 
 
-Il comprend l'ensemble des codes réalisés en ```r``` et en ```python``` pour reproduire l'ensemble des graphiques du rapport et du support de présentation du projet. 
+Il comprend l'ensemble des codes réalisés en ```r``` et en ```Python``` pour reproduire l'ensemble des graphiques du rapport et du support de présentation du projet. 
 
 ## Table des matières
 - [Installation de pyHSICLasso](#installation-pyhsiclasso)
@@ -15,7 +15,13 @@ Il comprend l'ensemble des codes réalisés en ```r``` et en ```python``` pour r
 pip install pyHSICLasso
 ```
 
+## Remarque pour HSICLassoVI (avec l'implémentation du NOCCO Lasso)
+Le package ```HSICLassoVI``` utilisé n'étant pas à jour, l'importation du fichier préconisée via le fichier ```setup.py``` est un échec. 
+
+C'est pourquoi nous avons conservé l'arborescence proposée pour ce package (pour éviter les problèmes de dépendance entre les méthodes de différents fichiers), se trouvant dans ```python-code/nocco_lasso/HSICLassoVI```. Nos implémentations personnelles pour les jeux de données simulés se trouvent quant à eux dans ```python-code/nocco_lasso/HSICLassoVI/models``` : fichiers ```nocco_lasso.py``` et ```storage_csv_plots.py```.
+
+
 ## Contributors
 [MAGHAMES Alexandre](https://github.com/AlexandreMaghames)
 [LEBOT Marceau](https://github.com/MarceauLB)
-[BRAULT Tom]() 
+[BRAULT Tom](https://github.com/TomBrault) 

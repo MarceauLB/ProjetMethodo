@@ -4,6 +4,9 @@
 # Packages and functions
 #------------------------------------------
 
+# We cloned the implementation of the HSICLassoVI package since the setup.py file was not up-to-date,
+# causing issues when trying to download it.
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
