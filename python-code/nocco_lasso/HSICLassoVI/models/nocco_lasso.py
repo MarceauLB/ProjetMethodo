@@ -27,35 +27,6 @@ np.random.seed(123)
 # Optimization of the regularization parameter (lambda)
 #--------------------------------------------------------
 
-"""
-def optimization_reg_param_regression(X, Y, d_star, k_fold=5):
-    n = X.shape[0]
-    lambda_seq = np.zeros(k_fold)
-
-    nocco_lasso_model = Proposed_NOCCO_Lasso(lam=[np.inf, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1], eps=1e-3)
-    nocco_lasso_model.input(X, Y)
-    res_samQL = nocco_lasso_model.regression_multi(kernels=['Gaussian'])
-    grid_lamb = nocco_lasso_model.get_lambda()  # Replace with actual method to retrieve lambdas
-
-    kf = KFold(n_splits=k_fold, shuffle=True, random_state=2012)
-    
-    for k, (train_index, val_index) in enumerate(kf.split(X)):
-        X_train, X_val = X[train_index], X[val_index]
-        Y_train, Y_val = Y[train_index], Y[val_index]
-
-        nocco_lasso_model.input(X_train, Y_train)
-        nocco_lasso_model.regression_multi(kernels=['Gaussian'])
-
-        selected_features = nocco_lasso_model.get_features(num_feat = d_star)
-        # How to recover y_pred_val from the selected features???
-        
-        mse = np.mean((y_pred_val - Y_val) ** 2, axis=0)
-        best_lambda_index = np.argmin(mse)
-        lambda_seq[k] = grid_lamb[best_lambda_index]
-
-    lambda_opt = np.mean(lambda_seq)
-    return lambda_opt
-"""
 #--------------------------------------------------------
 # Data 1: Additive model
 #--------------------------------------------------------
@@ -173,12 +144,12 @@ data1_number_samples = 250
 data1_step_size = 25
 
 # Sample sizes, matrix and average proportions
-#sample_sizes, feat_matrix, avg_proportions = data1_nocco_lasso(data1_number_samples, data1_step_size)
+sample_sizes, feat_matrix, avg_proportions = data1_nocco_lasso(data1_number_samples, data1_step_size)
 
 # CSV file
-#save_matrix_to_csv(feat_matrix, "data1_nocco_lasso_results_matrix.csv", sample_sizes)
+save_matrix_to_csv(feat_matrix, "data1_nocco_lasso_results_matrix.csv", sample_sizes)
 
-#csv_to_plot("data1_nocco_lasso_results_matrix.csv", "data1_nocco_lasso_correctly_selected_features.pdf")
+csv_to_plot("data1_nocco_lasso_results_matrix.csv", "data1_nocco_lasso_correctly_selected_features.pdf")
 # data1_nocco_lasso_plot(data1_number_samples, data1_step_size, "data1_nocco_lasso_correctly_selected_features.pdf")
 
 
