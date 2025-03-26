@@ -5,7 +5,6 @@
 #------------------------------------------
 
 import os
-import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -14,7 +13,6 @@ from sklearn.model_selection import KFold # Cross-validation
 from api import Proposed_NOCCO_Lasso # File with the NOCCO Lasso method
 
 from storage_csv_plots import save_matrix_to_csv, csv_to_plot # functions defined in the file 'storage_csv_plots.py'
-from red import red_score # function defined in the file 'red.py'
 
 # Code reproductibility
 np.random.seed(123) 
